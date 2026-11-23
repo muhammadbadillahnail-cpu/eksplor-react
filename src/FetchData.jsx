@@ -4,10 +4,12 @@ function FetchData() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [halaman, setHalaman] = useState(1);
 
   useEffect(() => {
-    console.log("effect jalan");
-    fetch("https://jsonplaceholder.typicode.com/posts?_limit=5")
+    console.log("effect jalan, halaman:", halaman);
+    setLoading(true);
+    fetch(`https://jsonplaceholder.typicode.com/posts?_limit=5&_page=${halaman}`)
       .then((res) => {
         if (!res.ok) throw new Error("Gagal mengambil data");
         return res.json();
@@ -20,7 +22,7 @@ function FetchData() {
         setError(err.message);
         setLoading(false);
       });
-  }, []); // [] = hanya jalan sekali saat komponen pertama muncul
+  }, [halaman]); // effect jalan lagi setiap halaman berubah
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -28,6 +30,8 @@ function FetchData() {
   return (
     <div>
       <h2>Data dari API</h2>
+      <button onClick={() => setHalaman(halaman + 1)}>Halaman berikutnya</button>
+      <p>Halaman: {halaman}</p>
       <ul>
         {posts.map((p) => (
           <li key={p.id}>{p.title}</li>
